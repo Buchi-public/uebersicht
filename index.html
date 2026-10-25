@@ -184,7 +184,7 @@ function belege() {
   let l = D.bank[MON] || [];
   if (FILTER === "fehlt") l = l.filter(b => stKlasse(b) === "fehlt");
   if (FILTER === "privat") l = l.filter(b => stKlasse(b) === "priv" || stKlasse(b) === "gem");
-  const zeilen = l.map(b => `<div class="item"><span class="st ${stKlasse(b)}"></span><div class="t">${esc(b.text)}${b.vorlaeufig?'<span class="tag">vorläufig</span>':""}<small>${dm(b.datum)} · ${esc(b.status)}${b.renr?" · Re "+esc(b.renr):""}</small>${b.mehrdeutig?`<span class="hinweis">⚠︎ ${esc(b.mehrdeutig)}</span>`:""}</div><span class="amt ${b.betrag>0?"pos":""}">${eur(b.betrag,true)}</span></div>`).join("");
+  const zeilen = l.map(b => `<div class="item"><span class="st ${stKlasse(b)}"></span><div class="t">${esc(b.text)}${b.vorlaeufig?'<span class="tag">vorläufig</span>':""}<small>${dm(b.datum)} · ${esc(b.status)}${b.renr?" · Re "+esc(b.renr):""}</small>${b.mehrdeutig?`<span class="hinweis">${esc(b.mehrdeutig)}</span>`:""}</div><span class="amt ${b.betrag>0?"pos":""}">${eur(b.betrag,true)}</span></div>`).join("");
   const nb = (D.belege[MON]||[]).filter(x => !x.bankbuchung);
   return kopf(seg) + `<main>
    <div class="sec">Bankbuchungen · ${l.length}</div><div class="card">${zeilen || '<div class="leer">Keine Buchungen.</div>'}</div>
@@ -196,7 +196,7 @@ function belege() {
 function honorare() {
   const H = D.honorare;
   const seg = `<div class="seg" id="hseg">${[["offen","Offen"],["bezahlt","Bezahlt"],["firma","Je Firma"]].map(([k,t])=>`<button data-h="${k}" class="${k===HFILTER?"on":""}">${t}</button>`).join("")}</div>`;
-  const zeile = (n, todo) => `<div class="item ${todo?"todo":""}"><div class="t">${esc(n.firma)} · ${esc(n.renr)}<small>${n.bezahlt?"bezahlt "+dm(n.bezahlt):"fällig "+dm(n.faellig)+(n.tage>0?" · "+n.tage+" Tage über":"")}</small>${n.mehrdeutig?`<span class="hinweis">⚠︎ ${esc(n.mehrdeutig)}</span>`:""}</div><span class="amt">${eur(n.brutto)}</span></div>`;
+  const zeile = (n, todo) => `<div class="item ${todo?"todo":""}"><div class="t">${esc(n.firma)} · ${esc(n.renr)}<small>${n.bezahlt?"bezahlt "+dm(n.bezahlt):"fällig "+dm(n.faellig)+(n.tage>0?" · "+n.tage+" Tage über":"")}</small>${n.mehrdeutig?`<span class="hinweis">${esc(n.mehrdeutig)}</span>`:""}</div><span class="amt">${eur(n.brutto)}</span></div>`;
   let inhalt = "";
   if (HFILTER === "offen") {
     inhalt = `<div class="sec">Überfällig · ${H.ueberfaellig.length}</div><div class="card">${H.ueberfaellig.map(n=>zeile(n,true)).join("") || '<div class="leer">Keine.</div>'}</div>
