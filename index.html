@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="referrer" content="no-referrer">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Übersicht">
+<meta name="theme-color" content="#F2F2F7">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>Übersicht</title>
+<style>
+:root{--bg:#F2F2F7;--surface:#fff;--fg:#000;--muted:#8E8E93;--line:rgba(60,60,67,.18);--fill:rgba(118,118,128,.12);
+ --accent:#1F4E78;--ok:#34C759;--bad:#FF3B30;--warn:#FFCC00;--todo:#FFF2CC;--bar:rgba(249,249,249,.85);
+ --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif}
+@media (prefers-color-scheme:dark){:root{--bg:#000;--surface:#1C1C1E;--fg:#fff;--line:rgba(84,84,88,.6);
+ --fill:rgba(118,118,128,.24);--todo:#3A3214;--accent:#6FA8DC;--bar:rgba(22,22,24,.85);color-scheme:dark}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:16px;-webkit-font-smoothing:antialiased}
+.top{position:sticky;top:0;z-index:5;background:var(--bar);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);
+ padding:calc(10px + env(safe-area-inset-top)) 16px 8px;border-bottom:.5px solid var(--line)}
+.top h1{font-size:30px;font-weight:700;letter-spacing:-.02em;margin:0}
+.stand{font-size:12.5px;color:var(--muted);margin-top:2px}
+.stand .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok);margin-right:5px;vertical-align:1px}
+.stand .dot.alt{background:var(--warn)}
+main{max-width:640px;margin:0 auto;padding:4px 14px calc(90px + env(safe-area-inset-bottom))}
+.sec{font-size:12.5px;text-transform:uppercase;color:var(--muted);margin:18px 6px 6px;letter-spacing:.02em}
+.card{background:var(--surface);border-radius:12px;overflow:hidden}
+.item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:.5px solid var(--line);font-size:15px}
+.item:last-child{border-bottom:none}
+.item .t{flex:1;min-width:0}
+.item .t small{display:block;color:var(--muted);font-size:12.5px;margin-top:1px}
+.amt{font-variant-numeric:tabular-nums;white-space:nowrap;font-size:14.5px}
+.amt.pos{color:var(--ok)}
+.todo{background:var(--todo)}
+.wer{font-size:12px;color:var(--muted);min-width:52px}
+.neu{font-size:11px;color:var(--bad);font-weight:600;margin-left:4px}
+.tag{display:inline-block;font-size:11px;color:var(--muted);border:.5px solid var(--line);border-radius:6px;padding:0 5px;margin-left:4px;white-space:nowrap}
+.hinweis{display:block;font-size:12px;color:#B07D00;margin-top:2px}
+@media (prefers-color-scheme:dark){.hinweis{color:#E0B84A}}
+.btn{font-size:13px;font-weight:600;color:var(--accent);background:var(--surface);border:.5px solid var(--line);border-radius:14px;padding:5px 11px;white-space:nowrap;text-decoration:none}
+.btn.gem{color:var(--muted);background:transparent;pointer-events:none}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.kpi{background:var(--surface);border-radius:12px;padding:11px 13px}
+.kpi .l{font-size:12.5px;color:var(--muted)}
+.kpi .v{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
+.kpi .s{font-size:12px;color:var(--muted)}
+.bar{height:6px;border-radius:3px;background:var(--fill);margin-top:7px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ok)}
+.st{width:10px;height:10px;border-radius:50%;flex:none}
+.st.ok{background:var(--ok)}.st.fehlt{background:var(--bad)}.st.priv{background:#C7C7CC}.st.gem{background:var(--warn)}.st.offen{background:transparent;border:1.5px solid var(--muted)}
+.seg{display:flex;background:var(--fill);border-radius:9px;padding:2px;margin:8px 0 2px}
+.seg button{flex:1;border:0;background:transparent;font:inherit;font-size:13.5px;padding:6px 0;border-radius:7px;color:var(--fg)}
+.seg button.on{background:var(--surface);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;border-top:.5px solid var(--line);background:var(--bar);
+ -webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);padding:6px 0 calc(6px + env(safe-area-inset-bottom))}
+nav button{flex:1;border:0;background:transparent;font:inherit;font-size:10.5px;color:var(--muted);padding:2px 0}
+nav button.on{color:var(--accent)}
+nav svg{width:24px;height:24px;display:block;margin:0 auto 2px;fill:none;stroke:currentColor;stroke-width:1.8}
+.chart{background:var(--surface);border-radius:12px;padding:12px 10px 8px}
+.legend{font-size:12px;color:var(--muted);display:flex;gap:12px;margin:0 4px 6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.leer{padding:12px 14px;color:var(--muted);font-size:14px}
+.lock{max-width:340px;margin:22vh auto 0;padding:0 20px;text-align:center}
+.lock h1{font-size:26px;margin:0 0 6px}.lock p{color:var(--muted);font-size:14px;margin:0 0 18px}
+.lock input{width:100%;font:inherit;font-size:17px;padding:12px 14px;border-radius:12px;border:.5px solid var(--line);background:var(--surface);color:var(--fg)}
+.lock button{margin-top:10px;width:100%;font:inherit;font-size:17px;font-weight:600;padding:12px;border:0;border-radius:12px;background:var(--accent);color:#fff}
+.lock .err{color:var(--bad);font-size:13px;min-height:18px;margin-top:8px}
+.foot{font-size:12px;color:var(--muted);text-align:center;margin:22px 0 0}
+.foot a{color:var(--muted)}
+</style></head><body>
+<div id="app"></div>
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+const PW_KEY = "uebersicht_pw";
+let D = null, TAB = "heute", MON = null, FILTER = "alle", HFILTER = "offen";
+
+// ---------- Hilfen
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const eur = (v, sign) => v == null ? "–" : (sign && v > 0 ? "+" : "") + new Intl.NumberFormat("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2}).format(v) + " €";
+const eur0 = v => v == null ? "–" : new Intl.NumberFormat("de-DE",{maximumFractionDigits:0}).format(v) + " €";
+const dm = s => s ? s.slice(8,10) + "." + s.slice(5,7) + "." : "";
+const MONN = ["Jän","Feb","Mär","Apr","Mai","Jun","Jul","Aug","Sep","Okt","Nov","Dez"];
+const monName = jm => MONN[+jm.slice(5,7)-1];
+const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+const ls = {get:k=>{try{return localStorage.getItem(k)}catch(e){return null}}, set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}, del:k=>{try{localStorage.removeItem(k)}catch(e){}}};
+const gemeldet = () => { try { return JSON.parse(ls.get("uebersicht_gemeldet") || "{}"); } catch(e) { return {}; } };
+
+// ---------- Entschlüsseln
+async function entschluesseln(pw) {
+  const r = await fetch("daten.enc.json?t=" + Date.now(), {cache:"no-store"});
+  const e = await r.json();
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
+  const key = await crypto.subtle.deriveKey({name:"PBKDF2", salt:b64(e.salt), iterations:e.iter, hash:"SHA-256"},
+    base, {name:"AES-GCM", length:256}, false, ["decrypt"]);
+  const pt = await crypto.subtle.decrypt({name:"AES-GCM", iv:b64(e.iv)}, key, b64(e.ct));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+
+function sperre(msg) {
+  $("#app").innerHTML = `<div class="lock"><h1>Übersicht</h1><p>Bitte Passwort eingeben. Es wird nur auf diesem Gerät gespeichert.</p>
+   <form id="f"><input id="pw" type="password" autocomplete="current-password" placeholder="Passwort">
+   <button>Öffnen</button><div class="err">${esc(msg||"")}</div></form></div>`;
+  $("#f").onsubmit = async ev => { ev.preventDefault(); await laden($("#pw").value, true); };
+}
+
+async function laden(pw, neu) {
+  try {
+    D = await entschluesseln(pw);
+    ls.set(PW_KEY, pw);
+    MON = MON || D.monate[0];
+    // gemeldete Punkte, die nicht mehr offen sind, vergessen
+    const g = gemeldet(), ids = new Set(D.todo.map(t => t.id));
+    Object.keys(g).forEach(k => { if (!ids.has(k)) delete g[k]; });
+    ls.set("uebersicht_gemeldet", JSON.stringify(g));
+    zeichne();
+  } catch (e) {
+    if (!neu) ls.del(PW_KEY);
+    sperre(neu ? "Passwort falsch oder Daten nicht erreichbar." : "");
+  }
+}
+
+// ---------- Bausteine
+const ICON = {
+  heute:'<path d="M4 12l8-7 8 7v8H4z"/>',
+  belege:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/>',
+  honorare:'<circle cx="12" cy="12" r="8"/><path d="M12 7v10M9 9.5h4.5a2 2 0 010 4H10a2 2 0 000 4h5"/>',
+  jahr:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'};
+const TITEL = {heute:"Heute", belege:"Belege", honorare:"Honorare", jahr:"Jahr " + new Date().getFullYear()};
+
+function kopf(extra) {
+  const st = new Date(D.stand), alt = (Date.now() - st) / 36e5 > 8;
+  const w = st.toLocaleDateString("de-AT",{weekday:"short"}) + " " + st.toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit"}) + " " + st.toLocaleTimeString("de-AT",{hour:"2-digit",minute:"2-digit"});
+  return `<div class="top"><h1>${TITEL[TAB]}</h1><div class="stand"><span class="dot ${alt?"alt":""}"></span>Stand ${w}${D.naechster?" · nächster Abgleich "+esc(D.naechster):""}</div>${extra||""}</div>`;
+}
+
+function mailto(t, art) {
+  const subj = `Buchhaltung erledigt: ${t.art} – ${t.text} [${t.id}]`;
+  const body = art === "Antworten" ? "Antwort:\n\n" : "Erledigt.\n";
+  return `mailto:${D.mail}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
+}
+
+function todoListe() {
+  if (!D.todo.length) return `<div class="card"><div class="leer">Nichts zu erledigen.</div></div>`;
+  const g = gemeldet();
+  const sortiert = [...D.todo].sort((a,b) => (a.wer === "Viktoria" ? 0 : 1) - (b.wer === "Viktoria" ? 0 : 1) || (b.neu - a.neu));
+  return `<div class="card">` + sortiert.map(t => {
+    const knopf = /Frage|zuordnen|ohne Honorarnote/.test(t.art) ? "Antworten" : "Erledigt";
+    const b = g[t.id] ? `<span class="btn gem">gemeldet</span>` : `<a class="btn" data-id="${esc(t.id)}" href="${mailto(t, knopf)}">${knopf}</a>`;
+    return `<div class="item todo"><span class="wer">${esc(t.wer)}</span><div class="t">${esc(t.art)}${t.neu?'<span class="neu">neu</span>':""}<small>${esc(t.text)}</small><small>${esc(t.aktion||"")}</small></div>${b}</div>`;
+  }).join("") + `</div>`;
+}
+
+// ---------- Reiter
+function heute() {
+  const m = D.monat, q = m.buchungen ? Math.round(100 * m.belegt / m.buchungen) : 0;
+  const unt = [m.kontoauszug, m.mastercard, m.ganymed].filter(Boolean).length;
+  const ue = D.honorare.ueberfaellig;
+  return kopf() + `<main>
+   <div class="sec">Zu erledigen · ${D.todo.length}</div>${todoListe()}
+   <div class="sec">${monName(m.jm)} ${m.jm.slice(0,4)}</div>
+   <div class="kpis">
+    <div class="kpi"><div class="l">Buchungen belegt</div><div class="v">${m.belegt} / ${m.buchungen}</div><div class="bar"><i style="width:${q}%"></i></div></div>
+    <div class="kpi"><div class="l">Monatsunterlagen</div>${m.jm < (D.digital_ab||"") ? `<div class="v">–</div><div class="s">digital ab ${monName(D.digital_ab)} ${D.digital_ab.slice(0,4)}</div>` : `<div class="v">${unt} / 3</div><div class="s">Kontoauszug · Mastercard · ganyMED</div>`}</div>
+    <div class="kpi"><div class="l">Honorare überfällig</div><div class="v">${ue.length ? eur0(ue.reduce((s,n)=>s+(n.brutto||0),0)) : "–"}</div><div class="s">${ue.length ? ue.length + " Noten" : (D.honorare.ungeprueft.anzahl ? "ab Bankimport" : "keine")}</div></div>
+    <div class="kpi"><div class="l">Neu abgelegt heute</div><div class="v">${m.neu_heute||0}</div><div class="s">Belege</div></div>
+   </div>
+   ${D.erledigt.length ? `<div class="sec">Seit letztem Abgleich erledigt</div><div class="card">${D.erledigt.map(e=>`<div class="item"><span class="st ok"></span><div class="t">${esc(e)}</div></div>`).join("")}</div>` : ""}
+   <div class="foot">Daten verschlüsselt · <a href="#" id="abmelden">Passwort auf diesem Gerät löschen</a></div>
+  </main>`;
+}
+
+function stKlasse(b) {
+  if (b.status === "belegt" || b.status === "Honorar bezahlt") return "ok";
+  if (b.status === "Beleg fehlt" || b.status === "Eingang ungeklärt") return "fehlt";
+  if (b.status === "privat") return "priv";
+  if (b.status === "gemischt – StB") return "gem";
+  return "offen";
+}
+function belege() {
+  const seg = `<div class="seg" id="mseg">${[...D.monate].reverse().map(jm=>`<button data-m="${jm}" class="${jm===MON?"on":""}">${monName(jm)}</button>`).join("")}</div>
+   <div class="seg" id="fseg">${["alle","fehlt","privat"].map(f=>`<button data-f="${f}" class="${f===FILTER?"on":""}">${f==="alle"?"Alle":f==="fehlt"?"Fehlt":"Privat"}</button>`).join("")}</div>`;
+  let l = D.bank[MON] || [];
+  if (FILTER === "fehlt") l = l.filter(b => stKlasse(b) === "fehlt");
+  if (FILTER === "privat") l = l.filter(b => stKlasse(b) === "priv" || stKlasse(b) === "gem");
+  const zeilen = l.map(b => `<div class="item"><span class="st ${stKlasse(b)}"></span><div class="t">${esc(b.text)}${b.vorlaeufig?'<span class="tag">vorläufig</span>':""}<small>${dm(b.datum)} · ${esc(b.status)}${b.renr?" · Re "+esc(b.renr):""}</small>${b.mehrdeutig?`<span class="hinweis">⚠︎ ${esc(b.mehrdeutig)}</span>`:""}</div><span class="amt ${b.betrag>0?"pos":""}">${eur(b.betrag,true)}</span></div>`).join("");
+  const nb = (D.belege[MON]||[]).filter(x => !x.bankbuchung);
+  return kopf(seg) + `<main>
+   <div class="sec">Bankbuchungen · ${l.length}</div><div class="card">${zeilen || '<div class="leer">Keine Buchungen.</div>'}</div>
+   ${nb.length ? `<div class="sec">Belege ohne Buchung · ${nb.length}</div><div class="card">${nb.map(x=>`<div class="item"><span class="st offen"></span><div class="t">${esc(x.partner)}<small>${dm(x.datum)} · ${esc(x.kategorie||x.zuordnung||"")}</small></div><span class="amt">${eur(x.betrag,true)}</span></div>`).join("")}</div>` : ""}
+   <div class="foot"><span style="color:var(--ok)">●</span> belegt · <span style="color:var(--bad)">●</span> fehlt · <span style="color:var(--warn)">●</span> gemischt · <span style="color:#C7C7CC">●</span> privat · ○ offen<br>„vorläufig“ = nur Ärztebank-Mitteilung, Banktext folgt mit dem Kontoauszug</div>
+  </main>`;
+}
+
+function honorare() {
+  const H = D.honorare;
+  const seg = `<div class="seg" id="hseg">${[["offen","Offen"],["bezahlt","Bezahlt"],["firma","Je Firma"]].map(([k,t])=>`<button data-h="${k}" class="${k===HFILTER?"on":""}">${t}</button>`).join("")}</div>`;
+  const zeile = (n, todo) => `<div class="item ${todo?"todo":""}"><div class="t">${esc(n.firma)} · ${esc(n.renr)}<small>${n.bezahlt?"bezahlt "+dm(n.bezahlt):"fällig "+dm(n.faellig)+(n.tage>0?" · "+n.tage+" Tage über":"")}</small>${n.mehrdeutig?`<span class="hinweis">⚠︎ ${esc(n.mehrdeutig)}</span>`:""}</div><span class="amt">${eur(n.brutto)}</span></div>`;
+  let inhalt = "";
+  if (HFILTER === "offen") {
+    inhalt = `<div class="sec">Überfällig · ${H.ueberfaellig.length}</div><div class="card">${H.ueberfaellig.map(n=>zeile(n,true)).join("") || '<div class="leer">Keine.</div>'}</div>
+     <div class="sec">Offen, noch nicht fällig · ${H.offen.length}</div><div class="card">${H.offen.map(n=>zeile(n)).join("") || '<div class="leer">Keine.</div>'}</div>
+     ${H.ungeprueft.anzahl ? `<div class="sec">Ungeprüft</div><div class="card"><div class="item"><div class="t">${H.ungeprueft.anzahl} Noten vor Bankimport<small>Zahlungsstatus wird mit Kontoauszug/CSV geklärt</small></div><span class="amt">${eur0(H.ungeprueft.summe)}</span></div></div>` : ""}`;
+  } else if (HFILTER === "bezahlt") {
+    inhalt = `<div class="sec">Zuletzt bezahlt</div><div class="card">${H.bezahlt.map(n=>zeile(n)).join("") || '<div class="leer">Noch keine Zahlungen zugeordnet.</div>'}</div>`;
+  } else {
+    inhalt = `<div class="sec">Honorare ${D.jahr.jahr} je Firma (brutto)</div><div class="card">${H.je_firma.map(([k,v])=>`<div class="item"><div class="t">${esc(k)}</div><span class="amt">${eur0(v)}</span></div>`).join("")}</div>`;
+  }
+  return kopf(seg) + `<main>${inhalt}</main>`;
+}
+
+function jahr() {
+  const J = D.jahr, bwa = J.bwa;
+  const vals = J.honorare_monat.concat(bwa ? bwa.umsatz.map(v=>v||0) : []);
+  const max = Math.max(1, ...vals), H = 110, base = 125;
+  let bars = "";
+  for (let m = 0; m < 12; m++) {
+    const x = 12 + m * 21.5;
+    const h1 = J.honorare_monat[m] / max * H;
+    bars += `<rect x="${x+7}" y="${base-h1}" width="7" height="${h1}" fill="#1F4E78"/>`;
+    if (bwa && bwa.umsatz[m] != null) { const h2 = bwa.umsatz[m] / max * H; bars += `<rect x="${x}" y="${base-h2}" width="7" height="${h2}" fill="#A9C4E0"/>`; }
+    bars += `<text x="${x+7}" y="138" font-size="8" fill="#8E8E93" text-anchor="middle">${MONN[m][0]}</text>`;
+  }
+  const kum = bwa ? `<div class="sec">Kumuliert ${MONN[bwa.monate[0]-1]}–${MONN[bwa.monate[bwa.monate.length-1]-1]}</div><div class="card">
+     <div class="item"><div class="t">Jahresbuch<small>nach Rechnungsdatum bzw. Zahlung</small></div><span class="amt">${eur0(J.jb_umsatz_kum)}</span></div>
+     <div class="item"><div class="t">BWA CONSOLV<small>nach Zahlungseingang</small></div><span class="amt">${eur0(bwa.umsatz_kum)}</span></div>
+     <div class="item ${Math.abs(J.jb_umsatz_kum-bwa.umsatz_kum)>50?"todo":""}"><div class="t">Differenz</div><span class="amt">${eur0(J.jb_umsatz_kum-bwa.umsatz_kum)}</span></div></div>
+    <div class="sec">BWA ${esc(bwa.stand)} · vorläufiges Ergebnis</div><div class="card"><div class="item"><div class="t">laut CONSOLV<small>erstellt ${esc(bwa.erstellt)}</small></div><span class="amt">${eur0(bwa.ergebnis)}</span></div></div>` : `<div class="sec">BWA</div><div class="card"><div class="leer">Noch keine BWA eingelesen.</div></div>`;
+  return kopf() + `<main><div class="sec">Honorare netto je Monat</div>
+   <div class="chart"><div class="legend"><span><i style="background:#1F4E78"></i>Jahresbuch</span>${bwa?'<span><i style="background:#A9C4E0"></i>BWA CONSOLV</span>':""}</div>
+   <svg viewBox="0 0 270 145" width="100%" role="img" aria-label="Honorare je Monat"><line x1="6" y1="125" x2="266" y2="125" stroke="#C7C7CC" stroke-width=".5"/>${bars}</svg></div>${kum}</main>`;
+}
+
+function zeichne() {
+  const R = {heute, belege, honorare, jahr};
+  $("#app").innerHTML = R[TAB]() + `<nav>${Object.keys(ICON).map(k=>`<button data-t="${k}" class="${k===TAB?"on":""}"><svg viewBox="0 0 24 24">${ICON[k]}</svg>${k==="jahr"?"Jahr":TITEL[k]}</button>`).join("")}</nav>`;
+  document.querySelectorAll("nav button").forEach(b => b.onclick = () => { TAB = b.dataset.t; zeichne(); scrollTo(0,0); });
+  document.querySelectorAll("#mseg button").forEach(b => b.onclick = () => { MON = b.dataset.m; zeichne(); });
+  document.querySelectorAll("#fseg button").forEach(b => b.onclick = () => { FILTER = b.dataset.f; zeichne(); });
+  document.querySelectorAll("#hseg button").forEach(b => b.onclick = () => { HFILTER = b.dataset.h; zeichne(); });
+  document.querySelectorAll("a.btn[data-id]").forEach(a => a.addEventListener("click", () => {
+    const g = gemeldet(); g[a.dataset.id] = Date.now(); ls.set("uebersicht_gemeldet", JSON.stringify(g)); setTimeout(zeichne, 500); }));
+  const ab = $("#abmelden"); if (ab) ab.onclick = e => { e.preventDefault(); ls.del(PW_KEY); D = null; sperre(""); };
+}
+
+// beim Zurückkehren in die App neu laden (aktuelle Daten)
+document.addEventListener("visibilitychange", () => { if (!document.hidden && D) { const pw = ls.get(PW_KEY); if (pw) laden(pw, false); } });
+const pw = ls.get(PW_KEY);
+pw ? laden(pw, false) : sperre("");
+</script>
+</body></html>
