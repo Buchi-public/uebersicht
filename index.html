@@ -165,7 +165,7 @@ function heute() {
    <div class="sec">Zu erledigen · ${D.todo.length}</div>${todoListe()}
    <div class="sec">${monName(m.jm)} ${m.jm.slice(0,4)}</div>
    <div class="kpis">
-    <div class="kpi"><div class="l">Buchungen belegt</div><div class="v">${m.belegt} / ${m.buchungen}</div><div class="bar"><i style="width:${q}%"></i></div></div>
+    <div class="kpi"><div class="l">Beleg vorhanden</div><div class="v">${m.belegt} / ${m.buchungen}</div><div class="bar"><i style="width:${q}%"></i></div></div>
     <div class="kpi"><div class="l">Monatsunterlagen</div>${m.jm < (D.digital_ab||"") ? `<div class="v">–</div><div class="s">digital ab ${monName(D.digital_ab)} ${D.digital_ab.slice(0,4)}</div>` : `<div class="v">${unt} / 3</div><div class="s">Kontoauszug · Mastercard · ganyMED</div>`}</div>
     <div class="kpi"><div class="l">Honorare überfällig</div><div class="v">${ue.length ? eur0(ue.reduce((s,n)=>s+(n.brutto||0),0)) : "–"}</div><div class="s">${ue.length ? ue.length + " Noten" : (D.honorare.ungeprueft.anzahl ? "ab Bankimport" : "keine")}</div></div>
     <div class="kpi"><div class="l">Neu abgelegt heute</div><div class="v">${m.neu_heute||0}</div><div class="s">Belege</div></div>
@@ -176,8 +176,9 @@ function heute() {
 }
 
 function stKlasse(b) {
-  if (b.status === "belegt" || b.status === "Honorar bezahlt") return "ok";
-  if (b.status === "Beleg fehlt" || b.status === "Eingang ungeklärt") return "fehlt";
+  const s = b.status || "";
+  if (s.startsWith("Beleg vorhanden") || s === "belegt" || s === "Honorar bezahlt") return "ok";
+  if (s.startsWith("Beleg fehlt") || s === "Eingang ohne Honorarnote" || s === "Eingang ungeklärt") return "fehlt";
   if (b.status === "privat") return "priv";
   if (b.status === "gemischt – StB") return "gem";
   return "offen";
@@ -188,9 +189,9 @@ function belege() {
   let l = D.bank[MON] || [];
   if (FILTER === "fehlt") l = l.filter(b => stKlasse(b) === "fehlt");
   if (FILTER === "privat") l = l.filter(b => stKlasse(b) === "priv" || stKlasse(b) === "gem");
-  const zeilen = l.map(b => `<div class="item"><span class="st ${stKlasse(b)}"></span><div class="t">${esc(b.text)}${b.vorlaeufig?'<span class="tag">vorläufig</span>':""}<small>${dm(b.datum)} · ${esc(b.status)}${b.renr?" · Re "+esc(b.renr):""}</small>${b.mehrdeutig?`<span class="hinweis">${esc(b.mehrdeutig)}</span>`:""}</div><span class="amt ${b.betrag>0?"pos":""}">${eur(b.betrag,true)}</span></div>`).join("");
+  const zeilen = l.map(b => `<div class="item"><span class="st ${stKlasse(b)}"></span><div class="t">${esc(b.text)}${b.etikett?`<span class="tag">${esc(b.etikett)}</span>`:(b.vorlaeufig?'<span class="tag">vorläufig</span>':"")}<small>${dm(b.datum)} · ${esc(b.status)}${b.renr?" · Re "+esc(b.renr):""}</small>${b.mehrdeutig?`<span class="hinweis">${esc(b.mehrdeutig)}</span>`:""}</div><span class="amt ${b.betrag>0?"pos":""}">${eur(b.betrag,true)}</span></div>`).join("");
   const nb = (D.belege[MON]||[]).filter(x => !x.bankbuchung);
-  const leg = `<div class="legtop"><span><b style="color:var(--ok)">●</b> belegt</span><span><b style="color:var(--bad)">●</b> fehlt</span><span><b style="color:var(--warn)">●</b> gemischt</span><span><b style="color:#C7C7CC">●</b> privat</span><span>○ offen</span><span><span class="tag">vorläufig</span> = Ärztebank-Meldung, Banktext folgt</span></div>`;
+  const leg = `<div class="legtop"><span><b style="color:var(--ok)">●</b> Beleg vorhanden</span><span><b style="color:var(--bad)">●</b> Beleg fehlt</span><span><b style="color:var(--warn)">●</b> gemischt</span><span><b style="color:#C7C7CC">●</b> privat</span><span>○ offen</span></div><div class="legtop"><span><span class="tag">Bank-Mail-Kurzinfo</span> = nur Betrag bekannt</span><span><span class="tag">Bank-App-Screenshot</span> = vom Handy, noch vorläufig</span><span><span class="tag">endgültig</span> = laut Kontoauszug/CSV</span></div>`;
   return kopf(seg + leg) + `<main>
    <div class="sec">Bankbuchungen · ${l.length}</div><div class="card">${zeilen || '<div class="leer">Keine Buchungen.</div>'}</div>
    ${nb.length ? `<div class="sec">Belege ohne Buchung · ${nb.length}</div><div class="card">${nb.map(x=>`<div class="item"><span class="st offen"></span><div class="t">${esc(x.partner)}<small>${dm(x.datum)} · ${esc(x.kategorie||x.zuordnung||"")}</small></div><span class="amt">${eur(x.betrag,true)}</span></div>`).join("")}</div>` : ""}
