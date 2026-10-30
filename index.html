@@ -21,6 +21,8 @@ html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);
 .top{position:sticky;top:0;z-index:5;background:var(--bar);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);
  padding:calc(10px + env(safe-area-inset-top)) 16px 8px;border-bottom:.5px solid var(--line)}
 .top h1{font-size:30px;font-weight:700;letter-spacing:-.02em;margin:0}
+.kopfzeile{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{height:40px;width:auto;background:#fff;border-radius:8px;padding:3px 5px}
 .stand{font-size:12.5px;color:var(--muted);margin-top:2px}
 .stand .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok);margin-right:5px;vertical-align:1px}
 .stand .dot.alt{background:var(--warn)}
@@ -136,7 +138,7 @@ const TITEL = {heute:"Heute", belege:"Belege", honorare:"Honorare", jahr:"Jahr "
 function kopf(extra) {
   const st = new Date(D.stand), alt = (Date.now() - st) / 36e5 > 8;
   const w = st.toLocaleDateString("de-AT",{weekday:"short"}) + " " + st.toLocaleDateString("de-AT",{day:"2-digit",month:"2-digit"}) + " " + st.toLocaleTimeString("de-AT",{hour:"2-digit",minute:"2-digit"});
-  return `<div class="top"><h1>${TITEL[TAB]}</h1><div class="stand"><span class="dot ${alt?"alt":""}"></span>Stand ${w}${D.naechster?" · nächster Abgleich "+esc(D.naechster):""}</div>${extra||""}</div>`;
+  return `<div class="top"><div class="kopfzeile"><h1>${TITEL[TAB]}</h1>${D.logo?`<img class="logo" src="${D.logo}" alt="">`:""}</div><div class="stand"><span class="dot ${alt?"alt":""}"></span>Stand ${w}${D.naechster?" · nächster Abgleich "+esc(D.naechster):""}</div>${extra||""}</div>`;
 }
 
 function mailto(t, art) {
