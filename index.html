@@ -72,6 +72,7 @@ nav svg{width:24px;height:24px;display:block;margin:0 auto 2px;fill:none;stroke:
 .legtop{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11.5px;color:var(--muted);margin:6px 2px 0;line-height:1.5}
 .legtop b{font-weight:400;margin-right:3px}
 .legtop .tag{margin-left:0}
+.legdet{margin-top:2px}.legdet summary{font-size:12px;color:var(--muted);cursor:pointer;list-style:none;padding:2px 0}.legdet summary::-webkit-details-marker{display:none}.legdet summary::after{content:" ▾"}.legdet[open] summary::after{content:" ▴"}
 .tag.z{color:var(--fg);background:var(--fill);border-color:transparent}
 .foot a{color:var(--muted)}
 /* Desktop (PC-Browser/PC-App) – iPhone bleibt unverändert */
@@ -99,6 +100,7 @@ nav svg{width:24px;height:24px;display:block;margin:0 auto 2px;fill:none;stroke:
 "use strict";
 const $ = s => document.querySelector(s);
 const PW_KEY = "uebersicht_pw";
+let LEGOPEN = false;
 let D = null, TAB = "heute", MON = null, FILTER = "alle", HFILTER = "offen";
 
 // ---------- Hilfen
@@ -213,7 +215,7 @@ function belege() {
   if (FILTER === "privat") l = l.filter(b => stKlasse(b) === "priv");
   const zeilen = l.map(b => `<div class="item"><span class="st ${stKlasse(b)}"></span><div class="t zeile"><span class="tx">${esc(b.text)}${(b.tags||[]).map(t=>`<span class="tag z">${esc(t)}</span>`).join("")}${b.etikett?`<span class="tag">${esc(b.etikett)}</span>`:(b.vorlaeufig?'<span class="tag">vorläufig</span>':"")}</span><small>${dm(b.datum)} · ${esc(b.status_text||b.status)}${b.renr?" · Re "+esc(b.renr):""}</small>${b.mehrdeutig?`<span class="hinweis">${esc(b.mehrdeutig)}</span>`:""}</div><span class="amt ${b.betrag>0?"pos":""}">${eur(b.betrag,true)}</span></div>`).join("");
   const nb = (D.belege[MON]||[]).filter(x => !x.bankbuchung);
-  const leg = `<div class="legtop"><span><b style="color:var(--ok)">●</b> Beleg vorhanden</span><span><b style="color:var(--bad)">●</b> Beleg fehlt</span><span><b style="color:#C7C7CC">●</b> kein Beleg nötig</span></div><div class="legtop"><span><span class="tag z">betrieblich</span> = rein betrieblich</span><span><span class="tag z">gemischt</span> = teils betrieblich, teils privat – Aufteilung macht der Steuerberater (CONSOLV)</span><span><span class="tag z">privat</span> = rein privat</span><span><span class="tag z">Umbuchung</span> = Entnahme/Einlage Raiba-Privatkonto bzw. Sparkonto Ärztebank</span><span><span class="tag z">Dauerbeleg</span> = Jahresvorschreibung/Vertrag belegt die Rate</span><span><span class="tag z">Honorarnote</span> = Zahlungseingang zu einer Honorarnote</span><span><span class="tag z">Papier (vor 11/2026)</span> = Beleg in Papierform bei CONSOLV</span></div><div class="legtop"><span><span class="tag">Bank-Mail-Kurzinfo</span> = nur Betrag bekannt</span><span><span class="tag">Bank-App-Screenshot</span> = vom Handy, noch vorläufig</span><span><span class="tag">endgültig</span> = laut Kontoauszug/CSV</span></div>`;
+  const leg = `<div class="legtop"><span><b style="color:var(--ok)">●</b> Beleg da</span><span><b style="color:var(--bad)">●</b> fehlt</span><span><b style="color:#C7C7CC">●</b> nicht nötig</span></div><details class="legdet" ${LEGOPEN?"open":""} ontoggle="LEGOPEN=this.open"><summary>Legende</summary><div class="legtop"><span><span class="tag z">betrieblich</span> · <span class="tag z">gemischt</span> = Aufteilung Betrieb/privat durch CONSOLV · <span class="tag z">privat</span></span></div><div class="legtop"><span><span class="tag z">Umbuchung</span> = eigene Konten (Raiba privat / Sparkonto)</span></div><div class="legtop"><span>Belegart: Rechnung · Kassenbon · Vorschreibung · Polizze · Vertrag · Honorarnote · Lohnverrechnung · Bescheid · Papier (vor 11/2026)</span></div><div class="legtop"><span><span class="tag">Bank-Mail-Kurzinfo</span> = nur Betrag · <span class="tag">Bank-App-Screenshot</span> = vorläufig · <span class="tag">endgültig</span> = Kontoauszug</span></div></details>`;
   return kopf(seg + leg) + `<main>
    <div class="sec">Bankbuchungen · ${l.length}</div><div class="card">${zeilen || '<div class="leer">Keine Buchungen.</div>'}</div>
    ${nb.length ? `<div class="sec">Belege ohne Buchung · ${nb.length}</div><div class="card">${nb.map(x=>`<div class="item"><span class="st offen"></span><div class="t">${esc(x.partner)}<small>${dm(x.datum)} · ${esc(x.kategorie||x.zuordnung||"")}</small></div><span class="amt">${eur(x.betrag,true)}</span></div>`).join("")}</div>` : ""}
