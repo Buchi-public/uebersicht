@@ -214,11 +214,14 @@ function belege() {
   if (FILTER === "fehlt") l = l.filter(b => stKlasse(b) === "fehlt");
   if (FILTER === "privat") l = l.filter(b => stKlasse(b) === "priv");
   const zeilen = l.map(b => `<div class="item"><span class="st ${stKlasse(b)}"></span><div class="t zeile"><span class="tx">${esc(b.text)}${(b.tags||[]).map(t=>`<span class="tag z">${esc(t)}</span>`).join("")}${b.etikett?`<span class="tag">${esc(b.etikett)}</span>`:(b.vorlaeufig?'<span class="tag">vorläufig</span>':"")}</span><small>${dm(b.datum)} · ${esc(b.status_text||b.status)}${b.renr?" · Re "+esc(b.renr):""}</small>${b.mehrdeutig?`<span class="hinweis">${esc(b.mehrdeutig)}</span>`:""}</div><span class="amt ${b.betrag>0?"pos":""}">${eur(b.betrag,true)}</span></div>`).join("");
-  const nb = (D.belege[MON]||[]).filter(x => !x.bankbuchung);
+  // Belege ohne Bankbuchung (Stefan 12.11.2026): privat/Umbuchung braucht keine Abbuchung -> grau, nicht unter „Fehlt“
+  const ohneBB = (D.belege[MON]||[]).filter(x => !x.bankbuchung);
+  const istPriv = x => x.zuordnung === "privat" || x.zuordnung === "Umbuchung";
+  const nb = ohneBB.filter(x => FILTER === "fehlt" ? !istPriv(x) : FILTER === "privat" ? istPriv(x) : true);
   const leg = `<div class="legtop"><span><b style="color:var(--ok)">●</b> Beleg da</span><span><b style="color:var(--bad)">●</b> fehlt</span><span><b style="color:#C7C7CC">●</b> nicht nötig</span></div><details class="legdet" ${LEGOPEN?"open":""} ontoggle="LEGOPEN=this.open"><summary>Legende</summary><div class="legtop"><span><span class="tag z">betrieblich</span> · <span class="tag z">gemischt</span> = Aufteilung Betrieb/privat durch CONSOLV · <span class="tag z">privat</span></span></div><div class="legtop"><span><span class="tag z">Umbuchung</span> = eigene Konten (Raiba privat / Sparkonto)</span></div><div class="legtop"><span>Belegart: Rechnung · Kassenbon · Vorschreibung · Polizze · Vertrag · Honorarnote · Lohnverrechnung · Bescheid · Papier (vor 11/2026)</span></div><div class="legtop"><span><span class="tag">Bank-Mail-Kurzinfo</span> = nur Betrag · <span class="tag">Bank-App-Screenshot</span> = vorläufig · <span class="tag">endgültig</span> = Kontoauszug</span></div></details>`;
   return kopf(seg + leg) + `<main>
-   <div class="sec">Bankbuchungen · ${l.length}</div><div class="card">${zeilen || '<div class="leer">Keine Buchungen.</div>'}</div>
-   ${nb.length ? `<div class="sec">Belege ohne Buchung · ${nb.length}</div><div class="card">${nb.map(x=>`<div class="item"><span class="st offen"></span><div class="t">${esc(x.partner)}<small>${dm(x.datum)} · ${esc(x.kategorie||x.zuordnung||"")}</small></div><span class="amt">${eur(x.betrag,true)}</span></div>`).join("")}</div>` : ""}
+   <div class="sec">${FILTER==="fehlt"?"Bankbuchungen ohne Beleg":"Bankbuchungen"} · ${l.length}</div><div class="card">${zeilen || '<div class="leer">Keine Buchungen.</div>'}</div>
+   ${nb.length ? `<div class="sec">Belege ohne Bankbuchung · ${nb.length}</div><div class="card">${nb.map(x=>`<div class="item"><span class="st ${istPriv(x)?"priv":"offen"}"></span><div class="t">${esc(x.partner)}<small>${dm(x.datum)} · ${istPriv(x)?esc(x.zuordnung)+" · keine Abbuchung nötig":esc(x.kategorie||x.zuordnung||"")+" · Abbuchung noch offen"}</small></div><span class="amt">${eur(x.betrag,true)}</span></div>`).join("")}</div>` : ""}
   </main>`;
 }
 
