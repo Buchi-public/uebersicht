@@ -1,0 +1,33 @@
+name: Daten-Sync
+# Holt die verschlüsselte daten.enc.json aus Google Drive (Ordner Dashboard-Sync)
+# und committet sie, wenn sie sich geändert hat. Eingerichtet 16.11.2026.
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/daten-sync.yml"
+permissions:
+  contents: write
+concurrency:
+  group: daten-sync
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Datei laden
+        run: |
+          set -e
+          curl -fsSL -o neu.json "https://drive.usercontent.google.com/download?id=1cYtKuX4kSoqOLeAb864r1PUDQ7iQwQXF&export=download&confirm=t"
+          # Plausibilitätsprüfung: gültiges JSON, kein HTML, Mindestgröße
+          python3 -c "import json,os,sys; d=json.load(open('neu.json')); sys.exit(0 if os.path.getsize('neu.json')>1000 else 1)"
+          if cmp -s neu.json daten.enc.json; then echo "unveraendert"; rm neu.json; exit 0; fi
+          mv neu.json daten.enc.json
+          git config user.name "uebersicht"
+          git config user.email "actions@users.noreply.github.com"
+          git add daten.enc.json
+          git commit -m "Daten"
+          git push
